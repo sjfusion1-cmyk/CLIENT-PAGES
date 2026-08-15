@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KP Designs - Premium Web Agency</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lilac: '#FAF8FF',
+                        accent: {
+                            400: '#A855F7',
+                            500: '#9333EA',
+                            600: '#7E22CE',
+                        },
+                        slate: {
+                            900: '#0F172A',
+                            600: '#475569',
+                        }
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF;
+            color: #0F172A;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(233, 213, 255, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(243, 232, 255, 0.5), 0 8px 10px -6px rgba(243, 232, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 30px -5px rgba(243, 232, 255, 0.8), 0 10px 15px -6px rgba(243, 232, 255, 0.8);
+            border-color: rgba(216, 180, 254, 0.5);
+        }
+
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #9333EA, #4F46E5);
+        }
+
+        .btn-primary {
+            background-color: #9333EA;
+            color: white;
+            box-shadow: 0 20px 25px -5px rgba(233, 213, 255, 1), 0 8px 10px -6px rgba(233, 213, 255, 1);
+            transition: all 0.3s ease;
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            background-color: #7E22CE;
+            box-shadow: 0 25px 30px -5px rgba(216, 180, 254, 1), 0 10px 15px -6px rgba(216, 180, 254, 1);
+        }
+
+        .btn-secondary {
+            background-color: #FFFFFF;
+            border: 1px solid rgba(233, 213, 255, 1);
+            color: #7E22CE;
+            transition: all 0.3s ease;
+            font-weight: 700;
+        }
+
+        .btn-secondary:hover {
+            background-color: #FAF5FF;
+        }
+
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            display: flex;
+        }
+
+        .marquee-content {
+            display: flex;
+            min-width: 200%;
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .testimonial-slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+        
+        .testimonial-slide.active {
+            display: flex;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased relative selection:bg-purple-600 selection:text-white bg-white text-slate-900 font-sans">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-10 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">K</span>
+                </div>
+                <span class="font-bold text-xl tracking-tight text-slate-800">KP <span class="text-purple-600">Designs</span></span>
+            </div>
+            <div class="hidden md:flex gap-8 items-center text-sm font-medium text-slate-600">
+                <a href="#services" class="hover:text-purple-600 transition-colors">Services</a>
+                <a href="#compare" class="hover:text-purple-600 transition-colors">Why Us</a>
+                <a href="#testimonials" class="hover:text-purple-600 transition-colors">Testimonials</a>
+                <a href="#contact" class="bg-purple-600 text-white px-5 py-2 rounded-full shadow-lg shadow-purple-200 hover:bg-purple-700 transition-colors font-bold">Book a Call</a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-slate-900">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="pointer-events-none opacity-0 md:hidden bg-white/80 backdrop-blur-xl border-t border-purple-100 absolute w-full left-0 top-full flex flex-col px-6 py-6 gap-6 shadow-2xl transition-all duration-300 transform -translate-y-4">
+            <a href="#services" class="text-slate-600 hover:text-purple-600 font-medium transition-colors text-lg">Services</a>
+            <a href="#compare" class="text-slate-600 hover:text-purple-600 font-medium transition-colors text-lg">Why Us</a>
+            <a href="#testimonials" class="text-slate-600 hover:text-purple-600 font-medium transition-colors text-lg">Testimonials</a>
+            <a href="#contact" class="text-purple-600 font-bold text-lg">Book a Call</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden bg-slate-950">
+        
+        <!-- 3D Background Container -->
+        <div class="absolute inset-0 z-0 w-full h-full bg-slate-950" id="canvas-container">
+            <canvas id="hero-canvas" class="w-full h-full opacity-50"></canvas>
+            <!-- Contrast Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-slate-950/95 via-slate-950/70 to-slate-950/10 pointer-events-none z-10"></div>
+        </div>
+
+        <!-- Content Overlay -->
+        <div class="max-w-7xl mx-auto px-10 w-full relative z-10 flex flex-col md:flex-row items-center pointer-events-none">
+            <!-- Left Column -->
+            <div class="flex flex-col items-start gap-6 hero-content md:w-3/5 lg:w-1/2 pointer-events-auto py-10">
+                <div class="inline-flex items-center gap-2 bg-purple-900/40 backdrop-blur-md border border-purple-500/30 px-4 py-1.5 rounded-full shadow-sm">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-400"></span>
+                    </span>
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-purple-200">✨ High-Performance Web Agency</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight text-white">
+                    Websites Built for <br/>
+                    <span class="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">Peak Performance.</span>
+                </h1>
+                
+                <p class="text-lg text-slate-300 max-w-lg leading-relaxed">
+                    KP Designs crafts high-converting digital storefronts. We launch your brand on Google, connect your booking tools (Square, Fresha, Calendly), and design your visual identity.
+                </p>
+                
+                <div class="flex flex-wrap items-center gap-4 mt-2">
+                    <a href="#contact" class="px-8 py-3.5 bg-purple-600 text-white font-bold rounded-xl shadow-xl shadow-purple-900/50 hover:shadow-purple-700/50 hover:bg-purple-500 transition-all flex items-center gap-2 group border border-purple-500">
+                        Explore Solutions
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="#contact" class="px-8 py-3.5 bg-white/5 backdrop-blur-md border border-purple-400/30 text-purple-200 font-bold rounded-xl hover:bg-white/10 transition-all flex items-center gap-2">
+                        Book Strategy Call
+                    </a>
+                </div>
+
+                <div class="mt-8 flex items-center gap-3 pt-4">
+                    <div class="flex -space-x-2">
+                        <div class="w-8 h-8 rounded-full border-2 border-slate-900 bg-slate-200"><img src="https://i.pravatar.cc/150?img=47" class="w-full h-full rounded-full object-cover" alt="Client Avatar"></div>
+                        <div class="w-8 h-8 rounded-full border-2 border-slate-900 bg-slate-300"><img src="https://i.pravatar.cc/150?img=33" class="w-full h-full rounded-full object-cover" alt="Client Avatar"></div>
+                        <div class="w-8 h-8 rounded-full border-2 border-slate-900 bg-slate-400"><img src="https://i.pravatar.cc/150?img=12" class="w-full h-full rounded-full object-cover" alt="Client Avatar"></div>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium">⭐⭐⭐⭐⭐ <span class="ml-1">Trusted by 50+ modern business owners</span></p>
+                </div>
+            </div>
+            
+            <!-- Right Column (Empty to let KP show through) -->
+            <div class="hidden md:block md:w-2/5 lg:w-1/2 h-[400px] md:h-[600px] pointer-events-none"></div>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="w-full bg-slate-900 py-3 marquee-container overflow-hidden relative z-20 border-y border-purple-500/30">
+        <div class="marquee-content animate-marquee flex items-center gap-12 font-black text-white/90 uppercase tracking-[0.25em] text-[10px]">
+            <span class="flex items-center gap-4">✦ WEBSITE DEVELOPMENT ✦ SEO & GOOGLE TOP RANKING ✦ LOGO & BRAND CREATION ✦ SQUARE & FRESHA INTEGRATION ✦ ULTRA-FAST HOSTING ✦ CONVERSION OPTIMIZED</span>
+            <!-- Duplicate for infinite scroll -->
+            <span class="flex items-center gap-4">✦ WEBSITE DEVELOPMENT ✦ SEO & GOOGLE TOP RANKING ✦ LOGO & BRAND CREATION ✦ SQUARE & FRESHA INTEGRATION ✦ ULTRA-FAST HOSTING ✦ CONVERSION OPTIMIZED</span>
+            <span class="flex items-center gap-4">✦ WEBSITE DEVELOPMENT ✦ SEO & GOOGLE TOP RANKING ✦ LOGO & BRAND CREATION ✦ SQUARE & FRESHA INTEGRATION ✦ ULTRA-FAST HOSTING ✦ CONVERSION OPTIMIZED</span>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-10">
+            <div class="text-center mb-16">
+                <h2 class="text-sm font-bold tracking-widest text-purple-600 uppercase mb-3">Digital Marketing Services</h2>
+                <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 max-w-3xl mx-auto">Performance Marketing & Design with Purpose</h3>
+                <p class="text-slate-600 mt-4 max-w-2xl mx-auto">
+                    At KP Designs, we build your digital presence from the ground up. Whether you need a fresh visual identity, a high-converting storefront, or targeted local marketing, our agile team crafts strategies that resonate and drive measurable growth without the hidden fees.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white/80 backdrop-blur-xl border border-purple-200/40 p-8 rounded-2xl shadow-xl shadow-purple-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+                    <div class="text-[10px] font-bold text-purple-600 tracking-widest uppercase mb-4">01.</div>
+                    <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="monitor-smartphone" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-3">Custom Web Development</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">
+                        We build high-speed, responsive, custom-coded storefronts and landing pages optimized for maximum conversion and seamless user journeys.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white/80 backdrop-blur-xl border border-purple-200/40 p-8 rounded-2xl shadow-xl shadow-purple-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+                    <div class="text-[10px] font-bold text-purple-600 tracking-widest uppercase mb-4">02.</div>
+                    <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="trending-up" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-3">Local Marketing & SEO</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">
+                        Dominate your geographic area. We enhance your local presence through specialized Google Business Profile optimization, technical SEO, and targeted keyword strategies.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white/80 backdrop-blur-xl border border-purple-200/40 p-8 rounded-2xl shadow-xl shadow-purple-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+                    <div class="text-[10px] font-bold text-purple-600 tracking-widest uppercase mb-4">03.</div>
+                    <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="palette" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-3">Brand & Graphic Design</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">
+                        Stand out visually. We design modern vector logos, complete typography systems, social media assets, and graphic design kits tailored to your unique identity.
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-white/80 backdrop-blur-xl border border-purple-200/40 p-8 rounded-2xl shadow-xl shadow-purple-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+                    <div class="text-[10px] font-bold text-purple-600 tracking-widest uppercase mb-4">04.</div>
+                    <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="mouse-pointer-click" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-3">Paid Media & Social Ads</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">
+                        Maximize your ROI with targeted paid search (Google Ads) and location-based social campaigns designed to boost brand awareness and pinpoint prime audiences.
+                    </p>
+                </div>
+                
+                <!-- Card 5 -->
+                <div class="bg-white/80 backdrop-blur-xl border border-purple-200/40 p-8 rounded-2xl shadow-xl shadow-purple-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+                    <div class="text-[10px] font-bold text-purple-600 tracking-widest uppercase mb-4">05.</div>
+                    <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="pen-tool" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-3">Content & Consultancy</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">
+                        Elevate your initiatives with comprehensive content strategies. We optimize landing pages, strategize blog posts, and provide ongoing digital consultancy to sustain growth.
+                    </p>
+                </div>
+                
+                <!-- Card 6 -->
+                <div class="bg-white/80 backdrop-blur-xl border border-purple-200/40 p-8 rounded-2xl shadow-xl shadow-purple-50 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
+                    <div class="text-[10px] font-bold text-purple-600 tracking-widest uppercase mb-4">06.</div>
+                    <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="calendar" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-3">Seamless Integrations</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">
+                        Zero-friction operations. We provide plug-and-play setup for Square, Fresha, Calendly, and custom forms so you can take client bookings effortlessly.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section id="compare" class="py-24 bg-[#FAF8FF]">
+        <div class="max-w-5xl mx-auto px-10">
+            <div class="text-center mb-16">
+                <h2 class="text-sm font-bold tracking-widest text-purple-600 uppercase mb-3">Why Choose KP</h2>
+                <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">Agile, Transparent, and Built for Impact</h3>
+                <p class="text-slate-600 mt-4 max-w-2xl mx-auto">
+                    We believe in complete transparency and real-time data access. Our expert team will always explain the <em>Why</em> behind the <em>How</em>, ensuring you know exactly how our strategies are adding value to your business.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Bad -->
+                <div class="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-3xl p-8 opacity-80 shadow-sm">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-600">Standard Agencies</h4>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3 text-slate-600">
+                            <i data-lucide="minus" class="w-5 h-5 mt-0.5 shrink-0 text-slate-400"></i>
+                            <span>Hidden fees and opaque reporting structures</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-slate-600">
+                            <i data-lucide="minus" class="w-5 h-5 mt-0.5 shrink-0 text-slate-400"></i>
+                            <span>Slow to adapt to digital landscape changes</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-slate-600">
+                            <i data-lucide="minus" class="w-5 h-5 mt-0.5 shrink-0 text-slate-400"></i>
+                            <span>Generic execution without explaining the strategy</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-slate-600">
+                            <i data-lucide="minus" class="w-5 h-5 mt-0.5 shrink-0 text-slate-400"></i>
+                            <span>One-size-fits-all templates and campaigns</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Good -->
+                <div class="bg-white border border-purple-200/60 rounded-3xl p-8 shadow-xl shadow-purple-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 px-4 py-2 bg-purple-600 text-white rounded-bl-2xl text-[10px] font-bold tracking-widest uppercase">OUR WAY</div>
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                            <i data-lucide="check" class="w-5 h-5"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900">KP Designs</h4>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3 text-slate-900 font-medium">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 mt-0.5 shrink-0 text-purple-600"></i>
+                            <span>Complete transparency with no guesswork or hidden costs</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-slate-900 font-medium">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 mt-0.5 shrink-0 text-purple-600"></i>
+                            <span>Small, nimble team that adapts quickly to your unique needs</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-slate-900 font-medium">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 mt-0.5 shrink-0 text-purple-600"></i>
+                            <span>Personalized education so you understand the ROI</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-slate-900 font-medium">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 mt-0.5 shrink-0 text-purple-600"></i>
+                            <span>Tailored graphic design, web, and media architecture</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-24 bg-white relative overflow-hidden">
+        <!-- Ambient glow -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-100/40 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-sm font-bold tracking-widest text-purple-600 uppercase mb-3">Testimonials</h2>
+                <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">What Our Clients Say</h3>
+                <p class="text-slate-600 mt-4 max-w-2xl mx-auto">Real results from business owners who transformed their digital presence with KP Designs.</p>
+            </div>
+            
+            <!-- Cards Grid Container -->
+            <div id="testimonial-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 min-h-[340px]">
+                <!-- Slide 1 -->
+                <div class="testimonial-slide active bg-white/80 backdrop-blur-xl border border-purple-200/40 shadow-xl shadow-purple-50 rounded-3xl p-8 flex-col justify-between text-left hover:-translate-y-1 transition-all">
+                    <div>
+                        <div class="flex text-purple-600 mb-4 gap-1">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-slate-700 font-medium leading-relaxed mb-6 italic text-sm md:text-base">
+                            "KP Designs transformed our client bookings. Our new site is stunning, integrated seamlessly with Fresha, and we are finally ranking on Google. Best investment we made this year."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-4 border-t border-purple-100/60 mt-auto">
+                        <div class="w-12 h-12 rounded-full bg-slate-200 border-2 border-white p-0.5 shadow-sm shrink-0">
+                            <img src="https://i.pravatar.cc/150?img=47" alt="Sarah Jenkins" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-slate-900 text-sm md:text-base">Sarah Jenkins</h5>
+                            <p class="text-xs md:text-sm text-slate-500">Founder, Luxe Salon & Spa</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="testimonial-slide active bg-white/80 backdrop-blur-xl border border-purple-200/40 shadow-xl shadow-purple-50 rounded-3xl p-8 flex-col justify-between text-left hover:-translate-y-1 transition-all">
+                    <div>
+                        <div class="flex text-purple-600 mb-4 gap-1">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-slate-700 font-medium leading-relaxed mb-6 italic text-sm md:text-base">
+                            "The level of design and performance is unmatched. They handled our complete rebrand and set up our Square payments directly on the site. Conversion rates have doubled."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-4 border-t border-purple-100/60 mt-auto">
+                        <div class="w-12 h-12 rounded-full bg-slate-200 border-2 border-white p-0.5 shadow-sm shrink-0">
+                            <img src="https://i.pravatar.cc/150?img=33" alt="Marcus Cole" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-slate-900 text-sm md:text-base">Marcus Cole</h5>
+                            <p class="text-xs md:text-sm text-slate-500">Owner, Elevate Fitness</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="testimonial-slide active bg-white/80 backdrop-blur-xl border border-purple-200/40 shadow-xl shadow-purple-50 rounded-3xl p-8 flex-col justify-between text-left hover:-translate-y-1 transition-all">
+                    <div>
+                        <div class="flex text-purple-600 mb-4 gap-1">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-slate-700 font-medium leading-relaxed mb-6 italic text-sm md:text-base">
+                            "They don't just build websites; they build digital businesses. The local SEO implementation got us to the first page of Google in under two months. Highly recommended."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-4 border-t border-purple-100/60 mt-auto">
+                        <div class="w-12 h-12 rounded-full bg-slate-200 border-2 border-white p-0.5 shadow-sm shrink-0">
+                            <img src="https://i.pravatar.cc/150?img=12" alt="Elena Rodriguez" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-slate-900 text-sm md:text-base">Elena Rodriguez</h5>
+                            <p class="text-xs md:text-sm text-slate-500">Director, Apex Consulting</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 4 -->
+                <div class="testimonial-slide bg-white/80 backdrop-blur-xl border border-purple-200/40 shadow-xl shadow-purple-50 rounded-3xl p-8 flex-col justify-between text-left hover:-translate-y-1 transition-all">
+                    <div>
+                        <div class="flex text-purple-600 mb-4 gap-1">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-slate-700 font-medium leading-relaxed mb-6 italic text-sm md:text-base">
+                            "The graphic design and logo package gave our brand the modern edge we desperately needed. Outstanding communication, complete transparency, and lightning-fast delivery."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-4 border-t border-purple-100/60 mt-auto">
+                        <div class="w-12 h-12 rounded-full bg-slate-200 border-2 border-white p-0.5 shadow-sm shrink-0">
+                            <img src="https://i.pravatar.cc/150?img=68" alt="David Chen" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-slate-900 text-sm md:text-base">David Chen</h5>
+                            <p class="text-xs md:text-sm text-slate-500">Co-Founder, Nexus Tech</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 5 -->
+                <div class="testimonial-slide bg-white/80 backdrop-blur-xl border border-purple-200/40 shadow-xl shadow-purple-50 rounded-3xl p-8 flex-col justify-between text-left hover:-translate-y-1 transition-all">
+                    <div>
+                        <div class="flex text-purple-600 mb-4 gap-1">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-slate-700 font-medium leading-relaxed mb-6 italic text-sm md:text-base">
+                            "Booking integration with Calendly was seamless. Our clients love the frictionless experience, and our local Google Ads campaign ROI has increased dramatically."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-4 border-t border-purple-100/60 mt-auto">
+                        <div class="w-12 h-12 rounded-full bg-slate-200 border-2 border-white p-0.5 shadow-sm shrink-0">
+                            <img src="https://i.pravatar.cc/150?img=44" alt="Amanda Vance" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-slate-900 text-sm md:text-base">Amanda Vance</h5>
+                            <p class="text-xs md:text-sm text-slate-500">Owner, Petals & Blooms</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 6 -->
+                <div class="testimonial-slide bg-white/80 backdrop-blur-xl border border-purple-200/40 shadow-xl shadow-purple-50 rounded-3xl p-8 flex-col justify-between text-left hover:-translate-y-1 transition-all">
+                    <div>
+                        <div class="flex text-purple-600 mb-4 gap-1">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-slate-700 font-medium leading-relaxed mb-6 italic text-sm md:text-base">
+                            "Transparent pricing with zero hidden fees. They explained the strategy behind every decision. KP Designs is our long-term digital marketing partner."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-4 border-t border-purple-100/60 mt-auto">
+                        <div class="w-12 h-12 rounded-full bg-slate-200 border-2 border-white p-0.5 shadow-sm shrink-0">
+                            <img src="https://i.pravatar.cc/150?img=53" alt="James Miller" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-slate-900 text-sm md:text-base">James Miller</h5>
+                            <p class="text-xs md:text-sm text-slate-500">Managing Partner, Miller & Co.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="flex justify-center items-center gap-4">
+                <button id="prev-slide" aria-label="Previous testimonial" class="w-11 h-11 rounded-full bg-white border border-purple-200 flex items-center justify-center text-purple-600 hover:bg-purple-50 transition-colors shadow-sm active:scale-95">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                </button>
+                <div id="testimonial-dots" class="flex items-center gap-2 px-2"></div>
+                <button id="next-slide" aria-label="Next testimonial" class="w-11 h-11 rounded-full bg-white border border-purple-200 flex items-center justify-center text-purple-600 hover:bg-purple-50 transition-colors shadow-sm active:scale-95">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Form Section -->
+    <section id="contact" class="py-24 bg-gradient-to-t from-white to-[#FAF8FF] relative border-t border-purple-500/10">
+        <div class="max-w-3xl mx-auto px-10">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">Ready to Scale Your Online Presence?</h2>
+                <p class="text-slate-600">Tell us about your project and we'll get back to you within 24 hours.</p>
+            </div>
+            
+            <div class="bg-white/80 backdrop-blur-xl border border-purple-200/40 rounded-3xl p-8 md:p-12 shadow-xl shadow-purple-50">
+                <form id="contact-form" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-slate-700">Full Name</label>
+                            <input type="text" required class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all shadow-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-slate-700">Email Address</label>
+                            <input type="email" required class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all shadow-sm">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-slate-700">Business Name & Website (if existing)</label>
+                        <input type="text" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all shadow-sm">
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-slate-700">Services Needed</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-purple-400 transition-colors shadow-sm">
+                                <input type="checkbox" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                <span class="text-sm font-medium text-slate-700">New Website</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-purple-400 transition-colors shadow-sm">
+                                <input type="checkbox" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                <span class="text-sm font-medium text-slate-700">SEO</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-purple-400 transition-colors shadow-sm">
+                                <input type="checkbox" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                <span class="text-sm font-medium text-slate-700">Logo Design</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-purple-400 transition-colors shadow-sm">
+                                <input type="checkbox" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                <span class="text-sm font-medium text-slate-700">Booking Integration</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 group mt-4 bg-purple-600 text-white shadow-xl shadow-purple-200 hover:shadow-purple-400 transition-all hover:bg-purple-700">
+                        <span>Launch Your Project</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </form>
+                
+                <div id="success-message" class="hidden text-center py-12">
+                    <div class="w-16 h-16 rounded-full bg-green-100 text-green-500 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="check" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-extrabold tracking-tight text-slate-900 mb-2">Message Sent!</h3>
+                    <p class="text-slate-600">We'll be in touch with you shortly to discuss your project.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="flex items-center justify-between px-10 py-8 bg-slate-900 border-t border-slate-800 text-[10px] text-slate-400 max-md:flex-col gap-4">
+        <div class="flex items-center gap-4">
+            <span class="font-bold text-slate-300 uppercase tracking-widest">KP Designs &copy; 2024</span>
+            <span class="w-1 h-1 bg-slate-600 rounded-full hidden md:block"></span>
+            <span class="hidden md:inline text-slate-500">Designed for High Growth</span>
+        </div>
+        
+        <div class="flex items-center gap-6 font-medium">
+            <a href="#services" class="hover:text-purple-400 transition-colors">Services</a>
+            <a href="#compare" class="hover:text-purple-400 transition-colors">Why Us</a>
+            <a href="#testimonials" class="hover:text-purple-400 transition-colors">Testimonials</a>
+            <a href="#" class="hover:text-purple-400 transition-colors">Privacy Policy</a>
+            <a href="#contact" class="hover:text-purple-400 font-bold text-purple-400 transition-colors">Launch Project →</a>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('opacity-0');
+            mobileMenu.classList.toggle('pointer-events-none');
+            mobileMenu.classList.toggle('-translate-y-4');
+            mobileMenu.classList.toggle('opacity-100');
+            mobileMenu.classList.toggle('pointer-events-auto');
+            mobileMenu.classList.toggle('translate-y-0');
+        });
+        
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
+                mobileMenu.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+            });
+        });
+
+        // Testimonial Slider (3 cards on desktop, 1 on mobile)
+        const slides = document.querySelectorAll('.testimonial-slide');
+        const nextBtn = document.getElementById('next-slide');
+        const prevBtn = document.getElementById('prev-slide');
+        const dotsContainer = document.getElementById('testimonial-dots');
+        let currentSlide = 0;
+
+        function isDesktop() {
+            return window.innerWidth >= 768;
+        }
+
+        function updateDots() {
+            if (!dotsContainer) return;
+            dotsContainer.innerHTML = '';
+            
+            const total = isDesktop() ? Math.ceil(slides.length / 3) : slides.length;
+            const current = isDesktop() ? Math.floor(currentSlide / 3) : currentSlide;
+            
+            for (let i = 0; i < total; i++) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = `h-2.5 rounded-full transition-all cursor-pointer ${i === current ? 'bg-purple-600 w-6' : 'bg-purple-200 hover:bg-purple-300 w-2.5'}`;
+                dot.setAttribute('aria-label', `Go to testimonial group ${i + 1}`);
+                dot.addEventListener('click', () => {
+                    currentSlide = isDesktop() ? i * 3 : i;
+                    showSlide(currentSlide);
+                });
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function showSlide(index) {
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.style.display = 'none';
+            });
+
+            if (isDesktop()) {
+                const page = Math.floor(index / 3);
+                const startIdx = page * 3;
+                for (let i = startIdx; i < startIdx + 3 && i < slides.length; i++) {
+                    slides[i].classList.add('active');
+                    slides[i].style.display = 'flex';
+                }
+            } else {
+                slides[index].classList.add('active');
+                slides[index].style.display = 'flex';
+            }
+            updateDots();
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (isDesktop()) {
+                const totalPages = Math.ceil(slides.length / 3);
+                const currentPage = Math.floor(currentSlide / 3);
+                const nextPage = (currentPage + 1) % totalPages;
+                currentSlide = nextPage * 3;
+            } else {
+                currentSlide = (currentSlide + 1) % slides.length;
+            }
+            showSlide(currentSlide);
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (isDesktop()) {
+                const totalPages = Math.ceil(slides.length / 3);
+                const currentPage = Math.floor(currentSlide / 3);
+                const prevPage = (currentPage - 1 + totalPages) % totalPages;
+                currentSlide = prevPage * 3;
+            } else {
+                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            }
+            showSlide(currentSlide);
+        });
+
+        window.addEventListener('resize', () => {
+            showSlide(currentSlide);
+        });
+
+        // Initialize first slide view
+        showSlide(0);
+        
+        // Auto slide
+        setInterval(() => {
+            if (isDesktop()) {
+                const totalPages = Math.ceil(slides.length / 3);
+                const currentPage = Math.floor(currentSlide / 3);
+                const nextPage = (currentPage + 1) % totalPages;
+                currentSlide = nextPage * 3;
+            } else {
+                currentSlide = (currentSlide + 1) % slides.length;
+            }
+            showSlide(currentSlide);
+        }, 8000);
+
+        // Form Submission
+        const form = document.getElementById('contact-form');
+        const successMsg = document.getElementById('success-message');
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            form.style.display = 'none';
+            successMsg.classList.remove('hidden');
+            successMsg.classList.add('block');
+        });
+
+        // GSAP Scroll Animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Fade in elements on scroll
+        gsap.utils.toArray('.glass-card').forEach(card => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                },
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                ease: 'power3.out'
+            });
+        });
+
+        // Three.js Interactive Hero Canvas (Solid KP + Dark Purple Energy Flow)
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+            const canvas = document.getElementById('hero-canvas');
+            
+            const scene = new THREE.Scene();
+            
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 15;
+            
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const group = new THREE.Group();
+            scene.add(group);
+
+            // 1. Dark Purple Nebula (Background Glow)
+            const nebCanvas = document.createElement('canvas');
+            nebCanvas.width = 512; nebCanvas.height = 512;
+            const nebCtx = nebCanvas.getContext('2d');
+            const nebGrad = nebCtx.createRadialGradient(256, 256, 0, 256, 256, 256);
+            nebGrad.addColorStop(0, 'rgba(88, 28, 135, 0.7)'); // Dark purple glow
+            nebGrad.addColorStop(0.6, 'rgba(59, 7, 100, 0.2)'); 
+            nebGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            nebCtx.fillStyle = nebGrad;
+            nebCtx.fillRect(0,0,512,512);
+            
+            const nebMat = new THREE.MeshBasicMaterial({ 
+                map: new THREE.CanvasTexture(nebCanvas), 
+                transparent: true, 
+                depthWrite: false,
+                blending: THREE.AdditiveBlending
+            });
+            const nebMesh = new THREE.Mesh(new THREE.PlaneGeometry(35, 35), nebMat);
+            nebMesh.position.set(0, 0, -3);
+            group.add(nebMesh);
+
+            // 2. Solid 'KP' Text
+            const kpCanvas = document.createElement('canvas');
+            kpCanvas.width = 1024; kpCanvas.height = 1024;
+            const kpCtx = kpCanvas.getContext('2d');
+            
+            const kpGrad = kpCtx.createLinearGradient(0, 200, 0, 800);
+            kpGrad.addColorStop(0, '#ffffff');
+            kpGrad.addColorStop(0.4, '#e9d5ff');
+            kpGrad.addColorStop(1, '#a855f7');
+            
+            kpCtx.font = '900 480px "Inter", "Arial Black", sans-serif';
+            kpCtx.textAlign = 'center';
+            kpCtx.textBaseline = 'middle';
+            
+            // Text Shadow for extra glow
+            kpCtx.shadowColor = 'rgba(168, 85, 247, 0.9)';
+            kpCtx.shadowBlur = 50;
+            
+            kpCtx.fillStyle = kpGrad;
+            kpCtx.fillText('KP', 512, 512);
+            kpCtx.fillText('KP', 512, 512); // double draw for solidity
+            
+            const kpMat = new THREE.MeshBasicMaterial({ 
+                map: new THREE.CanvasTexture(kpCanvas), 
+                transparent: true,
+                opacity: 0.6
+            });
+            const kpMesh = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), kpMat);
+            kpMesh.position.set(0, 0, 0);
+            group.add(kpMesh);
+
+            // 3. Flowing Dark Purple Energy (Particles)
+            const pCount = 1000;
+            const pGeo = new THREE.BufferGeometry();
+            const pPos = new Float32Array(pCount * 3);
+            const pColor = new Float32Array(pCount * 3);
+            const pVel = [];
+            
+            const c1 = new THREE.Color('#d8b4fe'); // light purple
+            const c2 = new THREE.Color('#9333ea'); // electric purple
+            const c3 = new THREE.Color('#4c1d95'); // dark purple energy
+            
+            for(let i=0; i<pCount; i++) {
+                // start particles in a core area behind KP
+                pPos[i*3] = (Math.random() - 0.5) * 8;
+                pPos[i*3+1] = (Math.random() - 0.5) * 8;
+                pPos[i*3+2] = (Math.random() - 0.5) * 2 - 1;
+                
+                const angle = Math.random() * Math.PI * 2;
+                pVel.push({
+                    x: Math.cos(angle),
+                    y: Math.sin(angle),
+                    z: (Math.random() - 0.5),
+                    speed: Math.random() * 0.04 + 0.005
+                });
+                
+                const c = [c1, c2, c3][Math.floor(Math.random()*3)];
+                pColor[i*3] = c.r;
+                pColor[i*3+1] = c.g;
+                pColor[i*3+2] = c.b;
+            }
+            pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+            pGeo.setAttribute('color', new THREE.BufferAttribute(pColor, 3));
+            
+            // Soft particle texture
+            const sparkCanvas = document.createElement('canvas');
+            sparkCanvas.width = 32; sparkCanvas.height = 32;
+            const sparkCtx = sparkCanvas.getContext('2d');
+            const sparkGrad = sparkCtx.createRadialGradient(16,16,0,16,16,16);
+            sparkGrad.addColorStop(0, 'rgba(255,255,255,1)');
+            sparkGrad.addColorStop(0.3, 'rgba(168,85,247,0.8)');
+            sparkGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            sparkCtx.fillStyle = sparkGrad;
+            sparkCtx.fillRect(0,0,32,32);
+
+            const pMat = new THREE.PointsMaterial({
+                size: 0.6,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.7,
+                map: new THREE.CanvasTexture(sparkCanvas),
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const pMesh = new THREE.Points(pGeo, pMat);
+            group.add(pMesh);
+
+            // Responsive Positioning
+            function updateLayout() {
+                const isDesktop = window.innerWidth > 768;
+                // Center it behind the text
+                group.position.x = isDesktop ? 2 : 0;
+                // Center vertically
+                group.position.y = 0;
+                // Scale down on mobile so it fits the screen properly
+                const scale = isDesktop ? 1 : 0.65;
+                group.scale.set(scale, scale, scale);
+            }
+            updateLayout();
+
+            // Interactivity
+            let mouseX = 0;
+            let mouseY = 0;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                updateLayout();
+            });
+
+            // Animation Loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Parallax Tilt
+                group.rotation.y += (mouseX * 0.4 - group.rotation.y) * 0.05;
+                group.rotation.x += (-mouseY * 0.4 - group.rotation.x) * 0.05;
+
+                // Animate Energy Particles
+                const positions = pGeo.attributes.position.array;
+                for(let i=0; i<pCount; i++) {
+                    // Flow outward
+                    positions[i*3] += pVel[i].x * pVel[i].speed;
+                    positions[i*3+1] += pVel[i].y * pVel[i].speed;
+                    positions[i*3+2] += pVel[i].z * pVel[i].speed;
+                    
+                    // Reset if too far
+                    const dist = Math.sqrt(
+                        positions[i*3]**2 + 
+                        positions[i*3+1]**2 + 
+                        positions[i*3+2]**2
+                    );
+                    
+                    if(dist > 7) {
+                        positions[i*3] = (Math.random() - 0.5) * 2;
+                        positions[i*3+1] = (Math.random() - 0.5) * 2;
+                        positions[i*3+2] = (Math.random() - 0.5) * 2 - 1;
+                    }
+                    
+                    // Mouse attraction for interactive energy flow
+                    const m3dX = mouseX * 8 - group.position.x; 
+                    const m3dY = mouseY * 8;
+                    const dx = m3dX - positions[i*3];
+                    const dy = m3dY - positions[i*3+1];
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if(d < 4) {
+                        positions[i*3] += dx * 0.015;
+                        positions[i*3+1] += dy * 0.015;
+                    }
+                }
+                pGeo.attributes.position.needsUpdate = true;
+                
+                // Gentle breathing for the text
+                kpMesh.position.y = Math.sin(Date.now() * 0.0015) * 0.15;
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        }
+
+        // Initialize Three.js after DOM load
+        window.addEventListener('load', initThreeJS);
+
+    </script>
+</body>
+</html>
+
