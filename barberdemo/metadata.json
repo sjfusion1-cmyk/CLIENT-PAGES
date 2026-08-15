@@ -1,0 +1,6 @@
+{
+  "name": "Carmen & Lilo's Barbershop",
+  "description": "Master-level men's haircuts in Toronto at honest, affordable prices. Private 1st-floor studio experience.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
